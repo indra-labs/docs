@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b7b86ad4-c3c7-4aac-a42f-c10770ad01e2" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/doc/1507.05724v1.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/1507.05724v1.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/2008-080.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/2008-080.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/2018-126.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/2018-126.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/DanezisG09.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/DanezisG09.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/acns11-certificateless.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/acns11-certificateless.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/architecture.md" beforeDir="false" afterPath="$PROJECT_DIR$/architecture.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/image-20220912120917831.png" beforeDir="false" afterPath="$PROJECT_DIR$/image-20220912120917831.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/indra.png" beforeDir="false" afterPath="$PROJECT_DIR$/indra.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/indra.svg" beforeDir="false" afterPath="$PROJECT_DIR$/indra.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/logo-for-dark-ground.png" beforeDir="false" afterPath="$PROJECT_DIR$/logo-for-dark-ground.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/logo-for-dark-ground.svg" beforeDir="false" afterPath="$PROJECT_DIR$/logo-for-dark-ground.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/logo-for-dark-tshirt.png" beforeDir="false" afterPath="$PROJECT_DIR$/logo-for-dark-tshirt.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/logo-for-dark-tshirt.svg" beforeDir="false" afterPath="$PROJECT_DIR$/logo-for-dark-tshirt.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/logo.png" beforeDir="false" afterPath="$PROJECT_DIR$/logo.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/logo.svg" beforeDir="false" afterPath="$PROJECT_DIR$/logo.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/message_format.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/message_format.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/onions.svg" beforeDir="false" afterPath="$PROJECT_DIR$/onions.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/torrelaycount.png" beforeDir="false" afterPath="$PROJECT_DIR$/torrelaycount.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/webdroplets.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/webdroplets.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/webdroplets.png" beforeDir="false" afterPath="$PROJECT_DIR$/webdroplets.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/webdroplets.xcf" beforeDir="false" afterPath="$PROJECT_DIR$/webdroplets.xcf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/webdropletssmall.png" beforeDir="false" afterPath="$PROJECT_DIR$/webdropletssmall.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/whitepaper.md" beforeDir="false" afterPath="$PROJECT_DIR$/whitepaper.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/whitepaper.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/whitepaper.pdf" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go Application" />
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file://$USER_HOME$/sdk/go1.19.5" />
+  <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="main" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="distro" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="true" />
+  </component>
+  <component name="GoVcsConfiguration">
+    <option name="GO_FMT" value="false" />
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="6sbz1rss" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2Fiq0Rl3bN2a472oEiVzDBYoBtZ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="sortByType" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go Application&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.format.on.save.advertiser.fired&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.vendoring.notification.had.been.shown&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.watchers.conflict.with.on.save.actions.check.performed&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;configurable..is.expanded&quot;: &quot;false&quot;,
+    &quot;configurable.GoLibrariesConfigurable.is.expanded&quot;: &quot;true&quot;,
+    &quot;full.screen.before.presentation.mode&quot;: &quot;false&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/loki/src/github.com/indra-labs/lnd&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.folding&quot;
+  }
+}</component>
+  <component name="Push.Settings">
+    <force-push-targets>
+      <force-push-target remote-path="origin" branch="main" />
+    </force-push-targets>
+  </component>
+  <component name="RecentsManager">
+    <key name="GoMoveDeclarationDialog.RECENT_KEY">
+      <recent name="$PROJECT_DIR$/pkg/util/windows" />
+      <recent name="$PROJECT_DIR$/pkg/util/math" />
+      <recent name="$PROJECT_DIR$/pkg/util/file" />
+      <recent name="$PROJECT_DIR$/pkg/norm" />
+      <recent name="$PROJECT_DIR$/pkg/payment" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pkg/wire" />
+      <recent name="$PROJECT_DIR$/pkg/wire/getbalance" />
+      <recent name="$PROJECT_DIR$/pkg/lnd" />
+      <recent name="$PROJECT_DIR$/pkg/wire/msat" />
+      <recent name="$PROJECT_DIR$/pkg" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/pkg/types" />
+      <recent name="$PROJECT_DIR$/pkg/crypto" />
+      <recent name="$PROJECT_DIR$/pkg/util" />
+      <recent name="$PROJECT_DIR$/pkg/proc" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Test.... in indra">
+    <configuration name="go build github.com/indra-labs/indra/cmd/indra" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+      <module name="indra" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-lcl=false -ll=trace serve" />
+      <kind value="DIRECTORY" />
+      <package value="github.com/indra-labs/indra" />
+      <directory value="$PROJECT_DIR$/cmd/indra" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestNew in github.com/Indra-Labs/indra/pkg/proc/pkg/app" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="indra" />
+      <working_directory value="$PROJECT_DIR$/pkg/proc/pkg/app" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/Indra-Labs/indra/pkg/proc/pkg/app" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestNew\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestNew in github.com/indra-labs/indra/pkg/app" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="indra" />
+      <working_directory value="$PROJECT_DIR$/pkg/app" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/indra-labs/indra/pkg/app" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestNew\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestOnionSkins_Confirmation in github.com/Indra-Labs/indra/pkg/wire" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="indra" />
+      <working_directory value="$PROJECT_DIR$/pkg/wire" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/Indra-Labs/indra/pkg/wire" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestOnionSkins_Confirmation\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestPing in github.com/Indra-Labs/indra/pkg/client" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="indra" />
+      <working_directory value="$PROJECT_DIR$/pkg/client" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/Indra-Labs/indra/pkg/client" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestPing\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestPing in github.com/Indra-Labs/indra/pkg/wire" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="indra" />
+      <working_directory value="$PROJECT_DIR$/pkg/wire" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/Indra-Labs/indra/pkg/wire" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestPing\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="... in indra" type="GoTestRunConfiguration" factoryName="Go Test" nameIsGenerated="true">
+      <module name="indra" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <package value="github.com/Indra-Labs/indra" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="..." />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Go Build.go build github.com/indra-labs/indra/cmd/indra" />
+      <item itemvalue="Go Test.... in indra" />
+      <item itemvalue="Go Test.TestNew in github.com/Indra-Labs/indra/pkg/proc/pkg/app" />
+      <item itemvalue="Go Test.TestNew in github.com/indra-labs/indra/pkg/app" />
+      <item itemvalue="Go Test.TestOnionSkins_Confirmation in github.com/Indra-Labs/indra/pkg/wire" />
+      <item itemvalue="Go Test.TestPing in github.com/Indra-Labs/indra/pkg/client" />
+      <item itemvalue="Go Test.TestPing in github.com/Indra-Labs/indra/pkg/wire" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Test.TestPing in github.com/Indra-Labs/indra/pkg/wire" />
+        <item itemvalue="Go Test.TestPing in github.com/Indra-Labs/indra/pkg/client" />
+        <item itemvalue="Go Test.TestOnionSkins_Confirmation in github.com/Indra-Labs/indra/pkg/wire" />
+        <item itemvalue="Go Test.TestNew in github.com/indra-labs/indra/pkg/app" />
+        <item itemvalue="Go Test.TestNew in github.com/Indra-Labs/indra/pkg/proc/pkg/app" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="wire.go" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="6bc33611-ea0b-4659-8e3c-0641004eb5f8">
+          <value>
+            <State />
+          </value>
+        </entry>
+        <entry key="875e2179-124c-44b8-b4b6-567f6a6a62f7">
+          <value>
+            <State />
+          </value>
+        </entry>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
+              <option name="COLUMN_ID_WIDTH">
+                <map>
+                  <entry key="Table.Default.Author.ColumnIdWidth" value="122" />
+                  <entry key="Table.Default.Date.ColumnIdWidth" value="159" />
+                  <entry key="Table.Space.CommitStatus.ColumnIdWidth" value="159" />
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+        <entry key="f1b4bf78-4701-4574-9b83-35f28f810f8e">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="main" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="protocol" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/main" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="test" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/pkg/proc" />
+      <path value="$PROJECT_DIR$/pkg/lnd" />
+    </ignored-roots>
+    <MESSAGE value="moving proc inside" />
+    <MESSAGE value="fixing code location switch" />
+    <MESSAGE value="Updated whitepaper with new elements&#10;&#10;keysend/sendkeys/balance purchase flow and the mechanics of a decentralised gateway toll to fund indra labs as well as third party seeds on subscription plans" />
+    <MESSAGE value="Added notes about depth and direction and session correlation" />
+    <MESSAGE value="changed keysend to AMP" />
+    <MESSAGE value="remove selector" />
+    <MESSAGE value="things that are working" />
+    <MESSAGE value="added getbalance and balance messages" />
+    <MESSAGE value="Initial addition of balance query/response&#10;&#10;also attending to concurrent safety in preparation for multithreading clients" />
+    <MESSAGE value="Fixed PendingPayment methods to assign for add and delete" />
+    <MESSAGE value="unexported sessions and pending payments&#10; &#10;so they cannot be accessed without the mutex locked" />
+    <MESSAGE value="eliminate possibility of adding duplicate sessions" />
+    <MESSAGE value="updating gitignore so we can use vendor without uploading it" />
+    <MESSAGE value="mock circuit generator can now create multiple circuits" />
+    <MESSAGE value="custom go script to pull lnd by tag and strip git and go metadata" />
+    <MESSAGE value="removed manually copied lnd things" />
+    <MESSAGE value="fixed module imports to enable lnd and lncli binaries" />
+    <MESSAGE value="fully enable building lnd/lncli with Makefile" />
+    <MESSAGE value="Merge client and wire into node" />
+    <MESSAGE value="Split everything fully apart" />
+    <MESSAGE value="Separated out payments" />
+    <MESSAGE value="separated utilities by category and grouped, grouped crypto" />
+    <option name="LAST_COMMIT_MESSAGE" value="separated utilities by category and grouped, grouped crypto" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>false</integration-enabled>
+    <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$USER_HOME$/go/src/net/netip/netip.go</url>
+          <line>1039</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint enabled="true" type="javascript-exception" />
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/indra$____in_indra.out" NAME="... in indra Coverage Results" MODIFIED="1672397872906" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="GoCoverage" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  </component>
+</project>
