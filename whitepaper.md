@@ -168,7 +168,7 @@ All messages look the same as packets in transit, and have no common data betwee
 
 ## Payment for Traffic
 
-Using [Atomic Multi-path Payment](https://docs.lightning.engineering/lightning-network-tools/lnd/amp) (AMP), relays advertise their LN node public keys alongside their Indra identity keys, they send a message constructed as follows:
+Using [Atomic Multi-path Payment](https://docs.lightning.engineering/lightning-network-tools/lnd/amp) (AMP), relays advertise their LN node public keys alongside their Indra identity keys, they send a message constructed as follows:
 
 - Preimage hash of the forward and return private keys that will be delivered after payment to prove payment and provide the keys for handling return messages.
 - Amount of bytes the payment is for.
@@ -188,6 +188,42 @@ Thus, sessions have a value associated with them to indicate what depth they can
 This also indirectly brings up the subject of the amount of bandwidth that would be paid for in each case, since each relay needs a session for each of the 5 positions it might be selected to use. Because `AMP` is a fast and relatively cheap operation, it also reduces the risk of loss due to a node failing to deliver service, as the cost paid is low per unit and this observed failure will reduce the chances of the node being selected for future work.
 
 As a relay dutifully performs its service it can then be selected to be used for further sessions at different positions and possibly at larger amounts of bandwidth at a time to reduce the per-transaction cost overhead.
+
+## Proof of HODL Consensus
+
+Following from the model of loyalty building between customers and businesses in the open market, a number of consensus rules and protocols help reward honest nodes and reduce the impact of bad behaviour in both clients and relays that harm the security and value of the network.
+
+Decentralised, and especially anonymous networks have a primary common vulnerability to Sybil attacks, since identities can be created in large numbers and used to overwhelm a network with false information.
+
+In order to prevent this attack there is a number of rules that honest peers follow, and mechanisms by which peers on the network evaluate each other on the relay and client side both.
+
+1. To rate limit the creation of new nodes on the network, nodes must make an on chain Bitcoin payment with a time delay back to themselves, and after a period of time they can then repeat the transaction, the latest head of the chain of transactions tied to the original TXID must be active in order for nodes to use the relay.
+
+	The size of the value of the time locked UTXO is a factor in node selection to weight probability, lower than the factor of age in first time usage by clients.
+
+	The UTXO hash is signed by the UTXO's private key in the node identity, proving ownership. It leverages the strong security of Bitcoin to anchor a relay identity to a definite time as well as raising the new relay identity creation cost in the short term.
+
+	The fees a relay pays to renew can be zero, but this will reduce their ranking during the interim periods after one expiry and the next activation.
+
+	Bigger UTXOs expire later than smaller, so the more a relay defers spending the more reliable they intend to be, and cutting down their transaction fee overheads. Sybil attacks rely on cheap identities, this creates a dilemma for attackers, who must lock up more for longer if they want to be more likely to win new loyal client customers, and putting a cap on how many Sybil clones they can create for any hypothetical get paid but not deliver attacks.
+
+	The expiry times must conform to the rules of the network, as a ratio of satoshis and blocks, some deviation is allowed, but the point is that smaller time locked spends must expire sooner and thus cost more in transaction fee overhead, it is just better to sink more than less, as well as it raising the probability of first time selection by clients.
+
+2. The age and cumulative time active for a TL UTXO is also used as a factor in the evaluation of the reliability of a peer. No matter how big the UTXO the clients will not pick it with higher probability until the relay has remained operational in a time/value weighting formula.
+
+3. For relays a client has used, the ones with the highest rates of fulfillment are weighted above all else. The previous two criteria are more used for distributing risk of first time use of a relay, so as to minimise the unfulfilled sessions versus delivered. At the same time, a client also needs to slowly shift its session usage around, and thus also try new relays out, and intermittently cease using some of its known and trusted relays for traffic for some period, which is necessary also for the feedback system described in the next section.
+
+### Anonymous Probabilistic Feedback Propagation
+
+In order to create a feedback loop between relays and clients, both relays and clients share random selections of known peers with each other that have been given a weighted probability of selection in the message of this small subset.
+
+The p2p layer ensures that any node can discover with fairly high convergence of the current full list of peers on the network if desired. This is a separate process that works a little bit like "shout-outs" in social media.
+
+In order to prevent the correlation of esteemed peers to a client's currently active traffic, the most recent activity and volumes of traffic over their circuits is weighed to not leak current connection data in close time proximity to this chatter. 
+
+The messages are only sent out once a day, and in proportion with the time known and the amount of first/last hop connection traffic sending these "shout-outs" are then combined with the frequencies of clients' recommendations lists allows long serving customers running honest clients to evaluate their peers in a way that doesn't either unmask them or enable spammy advertisement from constantly new clients attempting to poison these scores.
+
+>  With the combination of a form of lightweight bonding, timestamp anchoring to Bitcoin with proof of ownership, subjective histories of fidelity and a probabilistic feedback mechanism, it will be difficult to find a way to make income from Indranet without actually delivering service.
 
 ## Relay to Relay Traffic
 
