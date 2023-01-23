@@ -5,7 +5,8 @@
 #### Onion routed distributed virtual private network protocol with anonymised payments to create scaling incentives.
 > [David Vennik](mailto:david@cybriq.systems) September 2022 - January 2023
 
-## Abstract
+
+# Abstract
 
 The state of counter-surveillance technologies has remained largely unchanged in
 the 20 years since the inception of the [Tor network](https://torproject.org).
@@ -32,6 +33,36 @@ correlation between payments and session usage can be achieved and create a
 marketplace in routing services which can economically increase to a size that
 is beyond the capabilities of a state sized actor to fund an attack, while also
 improving latency and stability of routed connections.
+
+# Contents
+
+- [Tor Isn't Scaling, But Bitcoin Needs Onion Routing](#tor-isnt-scaling-but-bitcoin-needs-onion-routing)
+- [How Indranet Improves Upon Existing Mixnet Designs](#how-indranet-improves-upon-existing-mixnet-designs)
+	- [Active Attacks](#active-attacks)
+	- [Artificial Gap (packet dropping/delay) and Artificial Bursts](#artificial-gap-packet-droppingdelay-and-artificial-bursts)
+	- [Timing Analysis](#timing-analysis)
+- [Why We Need Indranet](#why-we-need-indranet)
+- [General Principles of Indranet Protocol](#general-principles-of-indranet-protocol)
+- [Protocol Concepts](#protocol-concepts)
+	- [Packet and Message Encryption](#packet-and-message-encryption)
+	- [Signing/Encryption Key Generation and Message Segmentation](#signingencryption-key-generation-and-message-segmentation)
+	- [Onion Path Topology](#onion-path-topology)
+	- [Return Path Routing](#return-path-routing)
+	- [Ping Messages and Path Failure Diagnosis](#ping-messages-and-path-failure-diagnosis)
+	- [Client](#client)
+- [Payment for Traffic](#payment-for-traffic)
+- [Proof of HODL Consensus](#proof-of-hodl-consensus)
+	- [Anonymous Probabilistic Feedback Propagation](#anonymous-probabilistic-feedback-propagation)
+	- [Rate Limiting](#rate-limiting)
+- [Relay to Relay Traffic](#relay-to-relay-traffic)
+	- [Relay to Relay Encryption](#relay-to-relay-encryption)
+	- [Dynamic error correction adjustment for Re-transmit Avoidance](#dynamic-error-correction-adjustment-for-re-transmit-avoidance)
+- [Client Path Generation Configuration](#client-path-generation-configuration)
+- [Hidden Services](#hidden-services)
+	- [Fully Anonymous VPS Hosting](#fully-anonymous-vps-hosting)
+- [Proxy Service](#proxy-service)
+- [Private Relay Services](#private-relay-services)
+- [The Indra Tax](#the-indra-tax)
 
 ## Tor Isn't Scaling, But Bitcoin Needs Onion Routing
 
@@ -72,7 +103,6 @@ Discovering the relationships between clients and the services they are connecti
 
 - **Packet scheduling is shuffled constantly** - Relays do not simply behave as First In First Out buffers, but rather, mix together the messages they receive. All messages have to be segmented for network transport, and as these segments are fed into the outbound queue, they are shuffled so that the ordering is broken up. This slightly increases latency but it decreases associativity between streams of packets constituting messages.
 - **Deliberate delays** - This is a tactic that is more often seen in email mixnets but can be used to a degree in lower latency mixnets like Indranet because not all traffic is time critical. Bitcoin transactions and blocks are relatively time critical, but DNS requests can comfortably take up to 100 ms without disrupting the functioning of ancillary centralised type services using them (IE, DNS for web traffic). Email is also a potential service type on Indranet, and because it is inherently slow and non-interactive, the delays can be even longer, potentially several seconds to deliver, and so the segments of the packets as they pass through will not have strong timing correlation. The delays are defined by the client, and raise the cost of the data from a regular non-delayed message by a percentage in proportion with the length of the delay.
-- **Client-side anonymity** - Indranet does not also expose relays to uncompensated exposure to entities outside of the network. Potentially Indra can implement Tor style web browser anonymisation, but because such traffic is often used to attack websites and web services it is usually going to be only a matter of time if a free cloak for malicious traffic becomes blacklisted by inbound connection filters on these services. Most Indranet traffic will be passed to decentralised servers, such as Bitcoin, Lightning and IPFS, which do not have a central point of observation either.
 
 ## Why We Need Indranet
 
@@ -90,22 +120,22 @@ Three key elements of the Tor protocol make it less than desirable in general.
 
 Tor is a poor solution for a very limited subset of the use cases that
 benefit from the security of route obfuscation. Indra aims to provide what Tor
-has definitely now failed to achieve for a large majority of internet users:
+has definitely now failed to achieve for a large majority of internet users for all purposes:
 location privacy.
 
-Indranet does not aim to compete with Tor for the use case of tunneling out to clear-net websites and services: the focus is on obscuring the source of traffic within decentralised, peer to peer protocols like Bitcoin, Lightning Network, Bittorrent, IPFS, and other similar, decentralised protocols.
+Indranet does not aim to compete with Tor for the use case of tunneling out to clear-net websites and services: the focus is on obscuring the source of traffic within decentralised, peer to peer protocols like Bitcoin, Lightning Network, Bittorrent, IPFS, and other similar, decentralised protocols. Enabling such services are possible for relay operators to do, since they can offer a Socks5 tunnel exit service on well known web service ports, though this feature may be integrated later, but not enabled by default.
 
 ## General Principles of Indranet Protocol
 
 There is four main types of traffic in Indranet:
 
-1. **Network Protocol Chatter** - sharing lists of known network nodes, their advertised exit services, and collaboratively generated statistics on bandwidth and uptime, and their long lived public keys for session initiation.
+1. **Peer to peer protocol chatter** - sharing lists of known network nodes, their advertised exit services, and collaboratively generated statistics on bandwidth and uptime, their long lived public keys for session initiation, and hidden service introducers.
 
-2. **Purchase of bandwidth sessions** - Combining the use of Lightning Network to perform payments to proxy nodes, and specially formed layered encryption of messages, enabling clients to acquire tokens that grant users the ability to relay arbitrary traffic through relays.
+2. **Purchase and topping up of bandwidth sessions** - Combining with the use of Lightning Network to perform payments to proxy nodes, and specially formed layered encryption of messages, enabling clients to acquire sessions that grant users the ability to relay arbitrary traffic through relays.
 
-3. **Liveness diagnostics** - In order to keep track of the state of relays on the network, clients send out regular 3 hop messages that circle back in a diamond-shaped topology that they use to acquire the liveness state of relays. This requires the relays to actually do work, so it costs a small amount, but provides reliable data about the state of relays the client has sessions with.
+3. **Liveness diagnostics** - When messages fail to circle back to the client that are expected to, an Indranet client can perform a diagnostic message protocol to discover which nodes are failing automatically to avoid using them and causing failed transmissions.
 
-4. **Relaying messages to decentralised network services** - because all relays on Indranet, and even clients, must have a Lightning server and thus a full or light (Neutrino SPV node) Bitcoin node, providing anonymised messaging to these protocols is the first type of exit traffic. Integration with other decentralised services will proceed later, and enable uploading or accessing content on networks like IPFS and Bittorrent, and eventually also to include decentralised messaging, social network, software/media repository hosting, and any other network, including federated and semi-decentralised systems like "cryptocurrencies".
+4. **Relaying messages to network services** - This is the bulk of traffic, relaying messages from clients to their intended destinations inside the network.
 
 ## Protocol Concepts
 
@@ -118,47 +148,41 @@ The message and packet headers contain the following elements:
 - **Message checksum** - 4 bytes of the truncated hash of the remainder of the message or packet, for preventing tampering and ensuring integrity of the message.
 - **Initialisation Vector** - cryptographically secure random value used for the payload encryption.
 - **Cloaked public key** - generated via the use of a strongly random 3 byte value that is concatenated with the receiver's public key, and the first 5 bytes of the combined hash is concatenated to the 3 byte nonce value to prevent inferring association of a stream of message packets with each other. This key also acts as a session identifier, and must be cloaked in order to not provide information to malicious nodes who would then be able to correlate messages.
-- **Signature** - The hash of the payload data is signed with a private key that formed the other half of the ECDH enabling securely conveying the encryption secret to the intended receiver over an insecure network. These keys are generated using an algorithm that efficiently generates secure private keys that are correctly on the [secp256k1](https://en.bitcoin.it/wiki/Secp256k1) elliptic curve.
+- **Public key** - In order to enable the receiver, who knows the cloaked public key's private key, to be able to generate the message encryption cipher, the public key is included in the header of each message and packet.
 
 ### Signing/Encryption Key Generation and Message Segmentation
 
 The signatures on messages must be different for each subsequent message, and when a message exceeds 1382 bytes (based on a 1410 byte MTU, typical for mobile networks) the message will be segmented into pieces of this size, the last packet padded out with random based hash chain generated noise.
 
-These signing keys are generated by creating two secure, secp256k1 private keys, the base and the secondary, and the base is scalar summed with the secondary to produce a new key, and this new key is then used again the same way for subsequent keys.
+These keys are generated by creating two secure, secp256k1 private keys, the base and the secondary, and the base is scalar summed with the secondary to produce a new key, and this new key is then used again the same way for subsequent keys.
 
-This scalar sum operation guarantees that the new private key is also a valid secp256k1 curve point (values not in the curve weaken the encryption), and can be performed very quickly without the resultant key being outside of the curve. Deriving the public key takes approximately the same time but a signature also maps to a message hash so it acts as a MAC (message authentication code) as well as providing half the encryption key to the receiver.
+This scalar sum operation guarantees that the new private key is also a valid secp256k1 curve point (values not in the curve weaken the encryption), and can be performed very quickly without the resultant key being outside of the curve. 
 
-This scheme helps guarantee that once messages are encrypted, even if an attacker gains access to the network handler packet cache they cannot access the encrypted payload data.
+This scheme is more aggressive than the Signal Protocol's Double Ratchet algorithm, which was designed for low bandwidth short message systems, and it consumes a fair bit of processing power. Benchmarks of initial implementations show that a single thread of a Ryzen 7 2021 mobile processor can process more than 100 mbit per CPU thread, which is more than fast enough for a gigabit dedicated relay with at least 10 CPU threads (and usually, 6 to spare for the rest of the work).
 
 ### Onion Path Topology
 
 ![](onions.svg)
 
-Indra uses a single topology that provides two hops between the client and the exit/endpoint being connected to. Only two are required to provide optimal anonymity - the first hop can infer it received a message from a client, but the second hop cannot, as it did not, and while most clients are not also providing relay service, a lot will use it, especially hidden services or multi-server setups that forward inbound requests one or more separate servers providing the services offered at the exit.
+Indra uses a single topology that provides two hops between the client and the exit/endpoint being connected to. Only two are required to provide optimal anonymity - the first hop can infer it received a message from a client, but the second hop cannot, as it did not, and while most clients are not also providing relay service, a lot will also run one it, especially such as hidden p2p services or multi-server setups that forward inbound requests one or more separate servers providing the services offered at the exit.
 
 Because it is mostly not possible to fully hide the fact that a node is a client, there is separate sessions for each of the 5 hops in the circuit. First and last hop sessions can make session balance queries directly, whereas for the other 3 hops it uses the standard path, except in reverse for the second last, and randomly, exit point to perform these queries, and the last two hops and the return hop carry back the response.
 
-Because Indra is source routed, every single request can pass through different paths, eliminating observable correlations between clients and relays for attempts to unmask users, and eliminating any discretion a relay can have about where traffic is forwarded - it either goes, or it does not. Attempts to attack users  anonymity by delaying or dropping messages by evil relays will violate expected relaying performance parameters and the offending nodes will be downgraded in their selection frequency as punishment.
+Because Indra is source routed, every single request can pass through different paths, eliminating observable correlations between clients and relays for attempts to unmask users, and eliminating any discretion a relay can have about where traffic is forwarded - it either goes, or it does not. Attempts to attack users  anonymity by delaying or dropping messages by evil relays will violate expected relaying performance parameters and the offending nodes will be downgraded in their selection frequency as punishment. Tor and I2P have limitations on how many paths they can open at any given time, whereas Indra can, and by default, does choose different paths for every single message cycle.
 
-### Proxy Messages
+### Return Path Routing
 
-**Proxy** messages are the standard for messages where the **client** is sending messages through a proxy, called the **exit**. Each of the colours shown in the diagram represents the message type. 
+As distinct from most mixnet implementations, interactive connections are not built out of chains of bidirectional connections between the hops in the circuit. The outbound message path is entirely unrelated to the inbound message path, except that the client initiates the messages outbound first, and must always.
 
-- **Forward** messages are purely constructed by the **client**. They are to be carried forwards to a specified IP address, which will be the next hop in the path, or an **exit**, and use the **forward** key provided by relays on purchase. The next hop will decrypt the payload, which can contain either another **forward** or an **exit** message.
-- **Return** messages consist of a preformed header encrypted to three secondary keys provided in the purchase process, derived from key pairs embedded in the encrypted layers of the header, called "return" keys, and three ciphers that are to be used sequentially to encrypt the reply message, and the cloaked address in a **return** relay message header layer combined with a public key the client generates to secure the message.
+This means that for "push" type interactive services, the client must send out a message containing the reverse path to deliver "pushed" messages. But fundamentally this is how websockets work anyway, using a subscribe message to start listening, the difference being that the client must send new return message headers in order to get responses.
 
-	The provided ciphers for a layer uses the second key known to the **return** relay and client but not the **exit** relay, thus they are unable to unwrap the encrypted message giving the address to the next hop, but by the header and a type byte in the message the **return** hop node then switches to the secondary key that the **exit** doesn't know, that corresponds to the cloaked key, which generates the cipher the **exit** hop was given, combined with the public key visible in the first header. (This is based on the reply messages in Sphinx).
-
-	The second **return** hop also uses this alternate key in order to conceal to the relay whether it is first from the exit or second, the last header only has a packet identifier, because the cipher for the payload is cached by the sender alongside the identifier. This slightly elaborate scheme enables pure forward source routing with the only caveat that exits know they are exits, but **forward** relays don't know whether they are receiving from client, or first, or second hop, and likewise **return** relays can't know whether they are receiving from an exit or sending to a client.
-
-	When a client lacks the **forward**/**return** key pair from a session purchase, it uses a 5 hop circular forward chain which delivers an identifier and the three required ciphers, which the relay will cache for a time expecting a purchase message with which these keys will be used to create the **return** onion encryption.
-- **Exit** messages are a special type of message. They contain three symmetric cipher keys that must be used in sequence over the payload, and then appended to the preformed routing header with the return byte flag set.
+To support the connection type model of HTTP, the protocol always pushes a few extra reply message packets in addition to the ones associated with a given outbound message, so that if more replies come back it can keep prompting for more to come. This is a limitation of source routing with anonymity, as the reply path is entirely under the control of the client.
 
 ### Ping Messages and Path Failure Diagnosis
 
 Because there is several intermediaries in paths in Indranet, and a failure for the response or confirmation to arrive in a timely fashion can mean a failure in any of the nodes in a circuit. The first and last hops can be openly probed for operation using a Get Balance query (which is a single hop out and back), but the others must be diagnosed differently. The reason being that using relays for the outer 3 hops at the same time as using them as first hops would potentially unmask the location of the client associated with the session.
 
-Thus, the ping message, which consists of 5 hops using the forward-only relaying instruction message, can be sent out several times to pass through these inner hops of the failed path. The failing node will not forward these messages and thus the confirmation of the ping will not arrive back at the client. Of course it can be that the randomly selected other relays in the ping path also are failing, which can then require further probing, using sessions that already proved to work until the one or more hops in the failed path are identified. While the process of diagnosis is occurring, Indra will not choose the 5 relays in the failed path until the diagnostic is completed.
+Thus, the ping message, which consists of 5 hops using the forward-only relaying instruction message, can be sent out several times to pass through these inner hops of the failed path. The failing node will not forward these messages and thus the confirmation of the ping will not arrive back at the client. Of course it can be that the randomly selected other relays in the ping path also are failing, which can then require further probing, using sessions that already proved to work until the one or more hops in the failed path are identified. While the process of diagnosis is occurring, Indra will not choose the relays in the failed path until the diagnostic is completed.
 
 When a delivery failure occurs, Indra will inform the client application by returning a connection reset by peer message so the client retries, and Indra then uses a different path that does not include any of the relays from the failed path until they are diagnosed.
 
@@ -166,11 +190,9 @@ When a delivery failure occurs, Indra will inform the client application by retu
 
 Unlike Tor and other anonymising protocols, every client has the capacity to act as an **exit** for traffic while it is online, for at minimum, Bitcoin and Lightning Network messages. They advertise themselves as "unreliable" exit nodes, this descriptor indicating that they are intermittently offline, and do not attempt to stay online. This will also mean they don't get a lot of traffic but users on the network will be able to use them when they see a status update on the peer to peer network.
 
-This increases the size of the anonymity set for these types of messages, and can include more exit protocols if the user is using them, such as IPFS and other decentralised protocols. It also makes it relatively simple for users to create small, low volume channels for Lightning Network, enabling direct, self-custodial LN payments.
+Users primarily using Indranet as clients can also gain an increase in their anonymity by also running a relay. This is generally not advisable on mobile devices since their intermittency and the latency of the p2p network DHT updates make them impractical for frequent use, but when they are online, they can be used, and the payments on their sessions can be used later to balance their channels, and amortise some of their relay session costs.
 
-In the diagram above, we distinguish the **client** with blue, but to the nodes before them in the circuit, they appear the same as the one sending, so, **forward** relays see a forward message to **client** and **exit**, and **return** relays see return, and **return** hops see **exit** as return.
-
-All messages look the same as packets in transit, and have no common data between them to establish relationships other than timing. For this reason, the network dispatcher shuffles packets as it sends them out as well.
+Because of the unreliability of especially mobile clients providing relay service, they are not subject to the same consensus about reliability, but will mainly be selected as exit points when they are online as a way to further boost the anonymity of the services being provided. And of course this will include hidden services, which can be leveraged for peer to peer protocols on the mobile devices.
 
 ## Payment for Traffic
 
@@ -179,21 +201,11 @@ Using [Atomic Multi-path Payment](https://docs.lightning.engineering/lightning-n
 - Preimage hash of the forward and return private keys that will be delivered after payment to prove payment and provide the keys for handling return messages.
 - Amount of bytes the payment is for.
 
-The payment will be for an amount of satoshis in accordance with the rate advertised by the seller. There is no direct return confirmation in this process. As with the rest of Indranet's design, the client is in control of everything, tightening the security.
+The payment will be for an amount of satoshis in accordance with the rate advertised by the seller, and the amount of advance payment the client is willing to put forward. There is no direct return confirmation in this process. As with the rest of Indranet's design, the client is in control of everything, tightening the security.
 
-In the initial bootstrap, the client will send out 5 such payments to establish enough hops to form a secure path. With 5 payments made, relating to 5 sets of **forward/return** keys by the hash of these keys being the preimage used.
+In the initial bootstrap, the client will send out 5 such payments to establish enough hops to form a secure path. With 5 payments made, relating to 5 sets of header/payload keys by the hash of these keys being the preimage used.
 
-This payment delivery onion can deliver 1 to 5 key sets, to handle all possible cases, the only difference between them being the additional key layer in each hop, followed by a forward for the next, the message type is named "SendKeys", which is what follows an LN AMP, and the bundled LND server then relays the bytes amount and preimage to Indra which then holds this to confirm the **SendKeys**.
-
-### Sessions, Depth and Direction
-
-The nodes that are directly adjacent, the one the onion is sent to by the client, and the one that returns a response to a client, can easily associate a session key with the IP address. The second level of depth is less problematic in this way, but has weaker anonymity than the exit hops.
-
-Thus, sessions have a value associated with them to indicate what depth they can be used, and which direction. A simple signed byte integer is sufficient to cover the usual 3 layers of depth. In a ping message there is 1, 2, and -1. In an exit message, there is 1, 2, 3, -2, -1.
-
-This also indirectly brings up the subject of the amount of bandwidth that would be paid for in each case, since each relay needs a session for each of the 5 positions it might be selected to use. Because `AMP` is a fast and relatively cheap operation, it also reduces the risk of loss due to a node failing to deliver service, as the cost paid is low per unit and this observed failure will reduce the chances of the node being selected for future work.
-
-As a relay dutifully performs its service it can then be selected to be used for further sessions at different positions and possibly at larger amounts of bandwidth at a time to reduce the per-transaction cost overhead.
+Then after sending out the payments with the preimages to the relevant relays, the client then sends out a "SendKeys" message which provides the relay with the two private keys that both identify the session being used in a hop in an onion message, as well as provide the relay with the necessary keys to unwrap their layer to be processed.
 
 ## Proof of HODL Consensus
 
@@ -231,31 +243,57 @@ The messages are only sent out once a day, and in proportion with the time known
 
 >  With the combination of a form of lightweight bonding, timestamp anchoring to Bitcoin with proof of ownership, subjective histories of fidelity and a probabilistic feedback mechanism, it will be difficult to find a way to make income from Indranet without actually delivering service.
 
+### Rate Limiting
+
+Because inherently anonymous, and especially source routed traffic volumes cannot be controlled by the use of client identifiers, Indranet needs a mechanism to enforce bandwidth limits and prevent congestion caused by the coincidence of many clients selecting a relay at the same time randomly.
+
+When a relay is exceeding its momentary traffic volume limit, as set by the relay operator, it will delay processing of message, and if the volume continues to flood, it will start to drop packets. This is obviously a potential vector for attacking a specific relay, but because although clients are not identifiable, sessions are, the sessions with the highest volumes will be dropped before lesser volume messages.
+
+Such sessions are clearly being used by attackers, and rightly can be denied, even if the session has allocation remaining. Thus, the messages are not only dropped, but the sessions balances are decremented as though they were relayed, as further punishment.
+
+In order to help smooth out the naturally fluctuating traffic levels, every exit session the relay processes, in the reply header of the response there is a single byte value that informs the client of the current utilisation rate as a percentage represented as a value between 0 and 255. Clients will then record this information in the session database and nodes with high utilisation will be reduced in their odds of selection for a path. Updating this data will be client-driven, and be based on the existing probabilities of selection as used to pick hops for paths.
+
+Non-exit nodes do not have the ability to pass such messages through on the path to and from the exit, so in addition, a longer period EMA of utilisation rate (traffic vs configured bandwidth capacity) is published to the p2p DHT and propagates to clients at lower time precision. Since this specific update is quite important to the network consensus, the client will try to also shuffle paths around so that circuits using a relay for an intermediate hop also is used as an exit point where possible.
+
+Requesting this information to peers would leak client's current running circuits to peers, so relays will interpret an exit message with no request data to be a utilisation state request and return this byte in a reply with no body. Clients will send out these empty requests randomly in the same way as the relays are chosen for paths to gather advance intelligence about potential congestion, and avoid a given relay for a while until a later request reveals the relay's traffic has returned to nominal levels.
+
+With the combination of periodic updating of longer time windows of recent activity from the p2p network, and the direct queries via empty exit onions, clients will avoid overloading relays. Users will even be able to define a threshold for "too busy" for a peer at a lower level in order to get a better latency guarantee, indeed, some service ports relate to applications with high interactivity and these can be automatically evaluated using this different threshold and achieve low latency as well as preventing network congestion.
+
 ## Relay to Relay Traffic
 
-Messages are segmented into 1382 byte segments and reassembled by relays when they receive them. The relays return an acknowledgement being a signature on the hash of the packet data (which includes the checksum prefix), and these are dispatched in a stream after shuffling by the sending relay, as well as interleaving messages passing to the common next hop when this happens. 
+Messages are segmented into 1382 byte segments and reassembled by relays when they receive them. The relays return an acknowledgement being a signature on the hash of the packet data (which includes the checksum prefix), and these are dispatched in a stream after shuffling already queued messages by the sending relay, as well as interleaving messages passing to the common next hop when this happens. 
 
-The relay receives the batch of packets, and when it receives enough pieces to reassemble it, according to the error correction data in the packets, and succeeds, reads the message instructions and does as is requested, either a **forward** or **return** message, the difference being described previously. 
+If a message fails to be received on the other end, the relay will retry the send a few times before giving up. Unfortunately it is not possible, while minimising packet overhead, to allow intermediate hops to return replies (it is around 250 bytes), and so from the client's perspective, the message has failed to be delivered as it does not receive the expected return trip confirmation or response, and it is impractical to then return a failure response back to the client.
+
+By not allowing such back-propagation in the protocol, attempting to attack the network by disrupting protocol packets with delays, corruption and dropping does not prompt a reverse path chain of messages that lead from the intermediate hop to the client.
+
+Because it is not possible, due to protecting anonymity, to connect an intermediate hop with an exit point's sessions, clients are simply in the dark when a message fails to travel forwards, and by the use of a time to live on the return path (which clients open after sending out a message to enable the last hop to send back the reply) for a given service type, the client caches the forward message payload and exit point after sending them, and then flushes them from the cache once they receive the confirmation/response.
+
+If it does not arrive before the TTL for the service type, the client will then construct a new path to deliver the message to the same exit a few more times before giving up. This value will also have the requested packet delay total added to it when there is delay messages in the onions. Failed messages may turn out to be failing on the return path, so on the other side, when a request is received, it is cached for a little while in case the request is sent again with a different return path, though it only needs to store the request message hash to achieve this.
 
 ### Relay to Relay Encryption
 
-In order to further secure traffic, relays in their chatter with each other provide private relay-to-relay keys to use for message encryption, which are rolled over at least once a day. 
+In order to further secure traffic, relays in their chatter with each other provide private relay-to-relay keys to use for message encryption. These are rolled over in accordance with the traffic volume between the peers.
 
-### Dynamic error correction adjustment for Retransmit Avoidance
+### Dynamic error correction adjustment for Re-transmit Avoidance
 
-Based on the conditions of the paths between two relays, by the ratio of packet loss the nodes adjust the error correction to use in order to maintain a margin above the current loss rate, built using a moving average of successful deliveries versus failed.
+Based on the conditions of the paths between two relays, by the ratio of packet loss the nodes adjust the error correction to use in order to maintain a margin above the current loss rate, built using a moving average of successful deliveries versus failed between the two relays.
 
 ## Client Path Generation Configuration
 
 A flexible configuration system for selecting paths and exit points is required to cover several different types of use case of obfuscated traffic paths.
 
 - Geo-location based exit and route hop selection:
-	- Users may need to avoid using exits within their own or some specified outside jurisdiction.
-	- Users may specifically want their exits to emerge in a specified geographical region.
-	- Users may want to specify, or avoid selecting intermediate paths in a list of specified geographical regions.
+  - Users may need to avoid using exits within their own or some specified outside jurisdiction.
+  - Users may specifically want their exits to emerge in a specified geographical region.
+  - Users may want to specify, or avoid selecting intermediate paths in a list of specified geographical regions.
 - Selection of specific routers for exits for a given protocol:
-	- Using a user's own servers, this can be generalised to allow remote access to a server controlled by the user.
-	- A company may provide specific services that users can access at a given set of addresses, whether IP based or domain based.
+  - Using a user's own servers, this can be generalised to allow remote access to a server controlled by the user.
+  - A company may provide specific services that users can access at a given set of addresses, whether IP based or domain based.
+
+Simply providing the IP or domain name of the endpoint to the built in Socks5 proxy will also pick the exit if it is an Indra peer, which makes servers like Bitcoin and LN nodes transparently reachable over Indranet without any user intervention, and makes Indranet the default path for all of the Indra relays when they connect to Indra peers.
+
+Since the net effect will be that relays will spend the same amount on tunnelling to other Indranet LN and Bitcoin nodes as others do to their own, the relays will be able to use this to prompt usage of nodes with imbalanced channels to correct their inbound liquidity. And of course this increases the amount of traffic and thus the anonymity set to include not just client initiated traffic but relay initiated as well.
 
 ## Hidden Services
 
@@ -273,6 +311,10 @@ To prevent clients from retaining old reply headers after they are expired, the 
 
 Hidden services will periodically rotate their rendezvous points, probably once an hour or so, depending on the propagation delay of the DHT, in order to further reduce the patterning of hidden service access traffic on the setup side.
 
+In addition, all Indra nodes, both relays and clients, frequently add new return keys and expire old return keys, meaning that the last leg, the third cipher in a hidden service routing header advertisement is also changing frequently, and nodes offering hidden services will also keep a larger volume of return keys in order that they not advertise the same keys to be used in the last layer of encryption.
+
+In addition, relay nodes only give a hidden service header on request, and delete it immediately afterwards, so while evil nodes that get the job of introducer might try to capture these keys and try to use cryptanalysis on them, the hidden service will rotate the relays it assigns as introducers regularly, in addition to the constant stream of newly generated return key pairs.
+
 ### Fully Anonymous VPS Hosting
 
 With the use of Indranet's hidden services protocol, in theory a user can establish an account with a remote VPS rental provider that uses Indranet, with an package that includes a pre-installed instance of Indranet (not providing relay service, but appearing in the peer DHT), running a certificate authenticated SSH endpoint, and then install whatever applications they want, hook them up to the server's service configuration, and thus remain completely anonymous and untraceable to the public IP of the VPS. In this plain configuration the user knows the IP address of the server's Indra node.
@@ -283,11 +325,11 @@ Or it can even go one step further, where even the server IP address is hidden, 
 
 The client will run a Socks5 proxy, which users then set up as their web browser/other proxy for connections. This proxy will make DNS requests via Indranet for the names in the requests, whether Indra hidden service addresses or clearnet addresses, forwarding the name resolution request out to random Indranet relays, who send back the IP address replies.
 
-Requests for forwarding to a specific Indra relay can be specified by an address matching the relay's IP address, or the zero address, meaning randomly select the exit, or a regular domain name for the case of relays that provide tunnel exit services.
+Requests for forwarding to a specific Indra relay can be specified by an address matching the relay's IP address, or the zero address, meaning randomly select the exit, or a regular domain name for the case of relays that provide tunnel exit services. As mentioned previously, relays automatically route Bitcoin and LN traffic over Indranet to Indranet Bitcoin and LN nodes.
 
 Relays that wish to provide tunnel exit service simply place a Socks5 proxy listening on their localhost service ports, inbound connections for these services are then forwarded through the proxy which then resolves names via Indra to dissociate this request from the exit, and forwards the messages and routes the replies back to the clients using the exit header reply segment.
 
-In this way, a user can run a bitcoin or lightning wallet or other client application, and set its proxy to the Indra client's proxy and they will then be able to tunnel out to the endpoint, in the case of Indra nodes offering this service, or via tunnel exit services for addresses not part of the Indranet swarm, no modification required except to add the proxy configuration to the server, or even to the operating system settings to enable proxying automatically for any application that knows how to use the OS proxy setting.
+In this way, a user can run a bitcoin or lightning wallet or other client application, and set its proxy to the Indra client's proxy and they will then be able to tunnel out to the endpoint, in the case of Indra nodes offering this service, or via tunnel exit services for addresses not part of the Indranet swarm, no modification required except to add the proxy configuration to the server, or even to the operating system settings to enable proxying automatically for any application that knows how to use the OS proxy setting. Or indeed, just providing this outbound routing service to only a specific set of ports.
 
 For software that does not have the ability to use a proxy, the Indra client also opens listeners on localhost addresses for configured port numbers, and then using server configurations' "connect only" type setting, establish a path to a single, randomly chosen Indra peer that provides this service, and of course many of them can be set up as needed. The caveat to this is that during a session, if it were desired to change the endpoint the path leads to, this has to be tolerated by the protocol, that it be ok for an endpoint change to occur periodically, or on every request.
 
@@ -299,7 +341,7 @@ However, since most p2p applications understand the use of Socks proxies, this w
 
 To enable users to use Indranet as a transport for accessing private servers, deployments using the `Neutrino` SPV bitcoin node and `lnd` can configure a public key certificate that they can use with a private key, in a similar way to SSH certificate encryption, to enable routing from any client to their specified node identified with its IP address, where there is a relay running at that IP address with the public key registered as enabling access to forward connections to a defined loopback address where the hidden service is running.
 
-This will enable SSH, FTP, and similar services for users to be accessed via Indra, while preventing third parties from identifying the origin of access to the server. This will also enable things like remote desktop access, but it does not include rendezvous routing.
+This will enable SSH, FTP, and similar services for users to be accessed via Indra, while preventing third parties from identifying the origin of access to the server. This will also enable things like remote desktop access, but it does not include rendezvous routing. It can also, as previously mentioned, to hide the destination point as well using hidden services.
 
 ## The Indra Tax
 
