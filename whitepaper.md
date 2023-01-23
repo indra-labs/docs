@@ -132,11 +132,15 @@ This scheme helps guarantee that once messages are encrypted, even if an attacke
 
 ### Onion Path Topology
 
-In Indranet there are two primary types of messages, one having a hexagonal shape, the other being diamond shaped. Here is a visual representation with a legend indicating message types in each:
-
 ![](onions.svg)
 
-### Proxy
+Indra uses a single topology that provides two hops between the client and the exit/endpoint being connected to. Only two are required to provide optimal anonymity - the first hop can infer it received a message from a client, but the second hop cannot, as it did not, and while most clients are not also providing relay service, a lot will use it, especially hidden services or multi-server setups that forward inbound requests one or more separate servers providing the services offered at the exit.
+
+Because it is mostly not possible to fully hide the fact that a node is a client, there is separate sessions for each of the 5 hops in the circuit. First and last hop sessions can make session balance queries directly, whereas for the other 3 hops it uses the standard path, except in reverse for the second last, and randomly, exit point to perform these queries, and the last two hops and the return hop carry back the response.
+
+Because Indra is source routed, every single request can pass through different paths, eliminating observable correlations between clients and relays for attempts to unmask users, and eliminating any discretion a relay can have about where traffic is forwarded - it either goes, or it does not. Attempts to attack users  anonymity by delaying or dropping messages by evil relays will violate expected relaying performance parameters and the offending nodes will be downgraded in their selection frequency as punishment.
+
+### Proxy Messages
 
 **Proxy** messages are the standard for messages where the **client** is sending messages through a proxy, called the **exit**. Each of the colours shown in the diagram represents the message type. 
 
@@ -150,15 +154,17 @@ In Indranet there are two primary types of messages, one having a hexagonal shap
 	When a client lacks the **forward**/**return** key pair from a session purchase, it uses a 5 hop circular forward chain which delivers an identifier and the three required ciphers, which the relay will cache for a time expecting a purchase message with which these keys will be used to create the **return** onion encryption.
 - **Exit** messages are a special type of message. They contain three symmetric cipher keys that must be used in sequence over the payload, and then appended to the preformed routing header with the return byte flag set.
 
-### Ping
+### Ping Messages and Path Failure Diagnosis
 
-**Ping** messages are purely network probes, used to gauge the reliability of relays the **client** has sessions for. They are constructed out of 3 part onion layers, which ensures that they appear the same as the first two hops in a proxy message to any relay.
+Because there is several intermediaries in paths in Indranet, and a failure for the response or confirmation to arrive in a timely fashion can mean a failure in any of the nodes in a circuit. The first and last hops can be openly probed for operation using a Get Balance query (which is a single hop out and back), but the others must be diagnosed differently. The reason being that using relays for the outer 3 hops at the same time as using them as first hops would potentially unmask the location of the client associated with the session.
 
-Clients perform **ping** messages periodically to check the state of nodes they might use, proactively, to derive several metrics to evaluate their use as hops in **proxy** onions.
+Thus, the ping message, which consists of 5 hops using the forward-only relaying instruction message, can be sent out several times to pass through these inner hops of the failed path. The failing node will not forward these messages and thus the confirmation of the ping will not arrive back at the client. Of course it can be that the randomly selected other relays in the ping path also are failing, which can then require further probing, using sessions that already proved to work until the one or more hops in the failed path are identified. While the process of diagnosis is occurring, Indra will not choose the 5 relays in the failed path until the diagnostic is completed.
+
+When a delivery failure occurs, Indra will inform the client application by returning a connection reset by peer message so the client retries, and Indra then uses a different path that does not include any of the relays from the failed path until they are diagnosed.
 
 ### Client
 
-Unlike Tor and other anonymising protocols, every client has the capacity to act as an **exit** for traffic while it is online, for at minimum, Bitcoin and Lightning Network messages. They advertise themselves as "unreliable" exit nodes, this descriptor indicating that they are intermittently offline, and do not attempt to stay online.
+Unlike Tor and other anonymising protocols, every client has the capacity to act as an **exit** for traffic while it is online, for at minimum, Bitcoin and Lightning Network messages. They advertise themselves as "unreliable" exit nodes, this descriptor indicating that they are intermittently offline, and do not attempt to stay online. This will also mean they don't get a lot of traffic but users on the network will be able to use them when they see a status update on the peer to peer network.
 
 This increases the size of the anonymity set for these types of messages, and can include more exit protocols if the user is using them, such as IPFS and other decentralised protocols. It also makes it relatively simple for users to create small, low volume channels for Lightning Network, enabling direct, self-custodial LN payments.
 
@@ -251,11 +257,43 @@ A flexible configuration system for selecting paths and exit points is required 
 	- Using a user's own servers, this can be generalised to allow remote access to a server controlled by the user.
 	- A company may provide specific services that users can access at a given set of addresses, whether IP based or domain based.
 
-## Rendezvous Routing for Hidden Services
+## Hidden Services
 
-In much the same way as for emerging directly at a selected router, rendezvous allows relay operators to provide services without revealing their location to the network. This functionality is fairly simple, it is a type of exit that requires the use of a specified public key used by the hidden service operator to negotiate routes to the rendezvous points, the router at the rendezvous essentially takes the packet received at the end point and instead of directly forwarding to another address, sends it in **return** messages to the hidden service's outbound rendezvous path.
+Because Indranet is source routed, the complexity of implementing hidden services is greatly reduced. Instead of requiring a pair of 3 hop paths connecting at a rendezvous points, hidden services send out reply header messages that clients can use to route traffic to them, and the rendezvous points then advertise that they are currently handing out reply headers for a hidden service address. This easily halves the latency of hidden service access.
 
-This functionality is slated for later implementation after direct, at-router and forwarded connections are implemented, as it requires the design of a protocol for the hidden service to request relaying and wait for **return** messages as they arrive. This is a relatively complex addition to the protocol, but it is important to add it later as this enables both forward **and** backward privacy, whereas the main purpose of the protocol is focused on providing forward privacy, and the exit services are advertised by nodes associated with an address.
+It is safe for a hidden service to send out connection headers similar to the format of exit messages, an onion header and a set of 3 ciphers generated out of the same public keys used at each hop and the nonce used for the header, with which a client can use these ciphers to encrypt to the payload keys their payload, and the header will plot the path back to the hidden service, each hop unwrapping their part of the encryption.
+
+A hidden service selects a number of rendezvous relays to cache these requests, and they then send out an update to a separate rendezvous address DHT that peers can use to request a list of rendezvous points that are delivering hidden service headers for a given hidden service address. The addresses are just a public key, 33 bytes encoded with a check using Bech32 encoding.
+
+The hidden service sends new return paths to the rendezvous, keeping a fresh supply of them available. Note that the sessions encoded into the reply headers use sessions that are paid for by the hidden service. However, the payload clients send out encrypted to these reply headers have their own return path, consisting of sessions that the client has paid for, so there is a roughly equal cost for both clients and hidden services.
+
+Clients will request new reply headers every minute or so while connection is active to the hidden service to keep the paths from forming any pattern.
+
+To prevent clients from retaining old reply headers after they are expired, the reply headers contain a timestamp at the very end of the header expected at the front of the message, pre-encrypted to the payload key and the two further layers of encryption of the first two hops of the path.
+
+Hidden services will periodically rotate their rendezvous points, probably once an hour or so, depending on the propagation delay of the DHT, in order to further reduce the patterning of hidden service access traffic on the setup side.
+
+### Fully Anonymous VPS Hosting
+
+With the use of Indranet's hidden services protocol, in theory a user can establish an account with a remote VPS rental provider that uses Indranet, with an package that includes a pre-installed instance of Indranet (not providing relay service, but appearing in the peer DHT), running a certificate authenticated SSH endpoint, and then install whatever applications they want, hook them up to the server's service configuration, and thus remain completely anonymous and untraceable to the public IP of the VPS. In this plain configuration the user knows the IP address of the server's Indra node.
+
+Or it can even go one step further, where even the server IP address is hidden, connected by a point to point connection to the provider's network infrastructure, which further increases security against an application breach leaking the IP address of the hidden services running on it. Neither the provider, or the client know anything about each other, and thus cannot be connected together, and likewise, none of the clients of the hidden service will reveal any location data by default to the applications on the server.
+
+## Proxy Service
+
+The client will run a Socks5 proxy, which users then set up as their web browser/other proxy for connections. This proxy will make DNS requests via Indranet for the names in the requests, whether Indra hidden service addresses or clearnet addresses, forwarding the name resolution request out to random Indranet relays, who send back the IP address replies.
+
+Requests for forwarding to a specific Indra relay can be specified by an address matching the relay's IP address, or the zero address, meaning randomly select the exit, or a regular domain name for the case of relays that provide tunnel exit services.
+
+Relays that wish to provide tunnel exit service simply place a Socks5 proxy listening on their localhost service ports, inbound connections for these services are then forwarded through the proxy which then resolves names via Indra to dissociate this request from the exit, and forwards the messages and routes the replies back to the clients using the exit header reply segment.
+
+In this way, a user can run a bitcoin or lightning wallet or other client application, and set its proxy to the Indra client's proxy and they will then be able to tunnel out to the endpoint, in the case of Indra nodes offering this service, or via tunnel exit services for addresses not part of the Indranet swarm, no modification required except to add the proxy configuration to the server, or even to the operating system settings to enable proxying automatically for any application that knows how to use the OS proxy setting.
+
+For software that does not have the ability to use a proxy, the Indra client also opens listeners on localhost addresses for configured port numbers, and then using server configurations' "connect only" type setting, establish a path to a single, randomly chosen Indra peer that provides this service, and of course many of them can be set up as needed. The caveat to this is that during a session, if it were desired to change the endpoint the path leads to, this has to be tolerated by the protocol, that it be ok for an endpoint change to occur periodically, or on every request.
+
+Peer to peer applications may or may not tolerate the apparent change. For services that have no concept of association, like a Bitcoin or other distributed application service RPC API, it is fine for each new request to take a different path and go to a different endpoint. Configuration will allow fixed endpoints (that don't change during a run), a rotating change of endpoint, and a period in which the endpoint is rotated if it is set to rotate, or a new endpoint each time.
+
+However, since most p2p applications understand the use of Socks proxies, this won't be a frequent requirement, and is of lower priority for implementation than the straight Socks5 proxy.
 
 ## Private Relay Services
 
@@ -265,13 +303,19 @@ This will enable SSH, FTP, and similar services for users to be accessed via Ind
 
 ## The Indra Tax
 
-In order to fund development of Indra, the default way that clients open channels to pay for bandwidth as follows:
+Here at Indra Labs we like to call a spade a spade, and we will be establishing in our distribution of the Indranet clients and relays the default establishment of Lightning channels through our peer to peer network seed nodes, which will charge market-typical routing fees to connect clients to the Indranet swarm's Lightning nodes and enable payments. Because we make this the default, and by default relays only connect to other relays and the seed nodes, effectively we can levy a kind of toll for the delivery of payments.
 
-- All nodes, both clients and relays, by default set up a channel to the Indranet seed node network, which is run by Indra Labs.
-- By default, relays must also open relays to a number of other relay nodes, in order to interconnect the Indranet swarm to route payments to relays.
-- It is possible for clients to establish other channels if they wish to, and initially this will simply require the understanding of how to control LND's channel protocols, but for the average user, their payments for Indranet bandwidth will always pass through, and usually pass through the LND nodes on Indra Labs seed nodes, enabling a stream of income to fund ongoing development of the system.
+We intend to also offer the option for investors to, preferably independently, run seed nodes, under the conditions they request, which can include our promotion of them on our website and communications. It is better that there be several independent entities involved in this, and of course the fees their seed nodes collect will be part of their reward for this service.
 
-This creates an incentive for investors to buy in and operate seed nodes, which decentralises the seed nodes, and we charge them a subscription fee for inclusion in the seed node list, in addition to the gatekeeper routing fees we can charge on our own seed nodes.
+Session payments are always routed through long paths, as permitted by the Lightning Network protocol, selecting a seed node first and then to several intermediary nodes in the swarm before reaching the destination. Users will be able to verify by enabling payment logging, and see a recent history of payments and the hops that the Lighting node in the client used to construct the payment message.
+
+The channels between clients and seed nodes are bidirectional, and users can then add to their client balance by sending payments to an invoice their client creates for adding funds to it. The amount of satoshis in their channels will be at their discretion, though the client will alert them that their channel is empty in order to prompt the user to fill it back up. Seed nodes will collect routing fees on both directions, of course.
+
+The size of Indra client Lightning wallet balances is dictated by the user, but in general it does not need to be very large, as it will likely process maybe several US dollars worth of traffic a day for most users, it is just a matter of convenience to make them larger. Rather than close them and establish new ones, when users want to increase their wallet balance they can simply establish more channels to the seeds, and avoid closure fees. Since a user is not going to pay into their wallet unless the client is running, these channels are ok to be offline the rest of the time.
+
+Users can also configure their client's Lightning node to open other channels to the Lightning Network as they wish, by pointing their wallet application to the IP address of their client, or if they are technically inclined, via `lncli`, as we are using `lnd` as our primary LN node due to it being written in the same language as Indranet itself. Payments into their Indra LN wallets can thus also pass through other channels than the seed nodes' channels, evading the inbound transaction fee to our seeds, although in general that just means paying someone else.
+
+Indra's channel management system will automate most of the task of balancing channels, shifting balance from depleted paths into ones that are not yet depleted, to ensure there is as many routes as possible in case seed nodes happen to be offline at the time of a payment.
 
 -----
 
